@@ -228,6 +228,9 @@ public class Level {
 			else if  (fullness == 3) {
 				water(col+1, row, map,2 );
 			}
+				else if  (fullness == 1) {
+				water(col+1, row, map,1 );
+			}
 		}
 		//left
 		if(col-1 >= 0 && !(map.getTiles()[col-1][row] instanceof Water)) {
@@ -236,6 +239,9 @@ public class Level {
 			}
 			else if  (fullness == 3) {
 				water(col-1, row, map,2 );
+			}
+			else if  (fullness == 1) {
+				water(col-1, row, map,1 );
 			}
 		}
 				}
