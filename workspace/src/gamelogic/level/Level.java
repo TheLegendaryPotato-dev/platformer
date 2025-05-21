@@ -195,32 +195,42 @@ public class Level {
 	
 	//#############################################################################################################
 	//Your code goes here! 
-	//Please make sure you read the rubric/directions carefully and implement the solution recursively!
+	//Name: Yuna Cho
+	//Purpose: recursive function that follows certain conditions 
+	//to make water spawn properly, and to dictate water behaviours-
+	// like falling down, or changing the image used
+	//PostCondition: this function will recursively implement water,
+	// and it will do as was specified in directions/purpose
+	//Preconditions:needs images called ____water as specified below, 
+	//and needs for all previous elements to exist/for names to match
 	private void water(int col, int row, Map map, int fullness) {
-		  //make water (You’ll need modify this to make different kinds of water such as half water and quarter water)
+		  //make water full when it first spawns
 		Water w = new Water (col, row, tileSize, tileset.getImage("Full_water"), this, fullness);
+		// if the fullness 0 if specified
 		if (fullness == 0){
 		 w = new Water (col, row, tileSize, tileset.getImage("Falling_water"), this, fullness);
 		}
+		// if the fullness 1 if specified
 		else if (fullness == 1){
 		 w = new Water (col, row, tileSize, tileset.getImage("Quarter_water"), this, fullness);
 		}
+		// if the fullness 2 if specified
 		else if (fullness == 2){
 		 w = new Water (col, row, tileSize, tileset.getImage("Half_water"), this, fullness);
 		}
+		//change the tile to actually be water
 		map.addTile(col, row, w);
 
-                       //check if we can go down
+                       //check if we can go down, and if thereś a ground tile beneath to make the fullness 3
 				 if ((row+1 < map.getTiles()[0].length && !(map.getTiles()[col][row+1]).isSolid()) && (row+2 < map.getTiles()[0].length && (map.getTiles()[col][row+2]).isSolid())){
 				water(col, row+1, map, 3); 
-				}
+				}//check if can go down, and if there's nothing beneath to change fullness to 0/falling water
 				else if (row+1 < map.getTiles()[0].length && !(map.getTiles()[col][row+1]).isSolid()){
 					water(col, row+1, map, 0);
 				}
                        //if we can’t go down go left and right.
 				else if (row+1 < map.getTiles()[0].length &&(map.getTiles()[col][row+1].isSolid())){
-						//right
-
+						//water moves right
 		if(col+1 < map.getTiles().length && !(map.getTiles()[col+1][row] instanceof Water)) {
 			if (fullness == 2) {
 				water(col+1 ,  row, map,1 );
@@ -232,7 +242,7 @@ public class Level {
 				water(col+1, row, map,1 );
 			}
 		}
-		//left
+		//water moves left 
 		if(col-1 >= 0 && !(map.getTiles()[col-1][row] instanceof Water)) {
 			if (fullness == 2) {
 				water(col-1 ,  row, map,1 );
