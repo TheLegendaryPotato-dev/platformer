@@ -257,8 +257,43 @@ public class Level {
 				}
 	}
 	private void addGas(int col, int row, Map map, int numSquaresToFill, ArrayList<Gas> placedThisRound) { 
-		
+		//draw a single gas block
+		Gas g = new Gas (col, row, tileSize, tileset.getImage("GasOne"), this, 0);
+		   map.addTile(col, row, g);
+		numSquaresToFill--;
+		placedThisRound.add(g);
+
+		while(numSquaresToFill > 0 && placedThisRound.size()>0){
+		col = placedThisRound.get(0).getCol();
+		row = placedThisRound.get(0).getRow();
+		placedThisRound.remove(0);
+		//the pattern
+		//start at that central point draw 8 blocks around it.
+		for(int rowIndex = row-1; rowIndex<row+2; rowIndex++){
+            for(int colIndex = col; colIndex>col-2 ; colIndex-=2)
+            {
+				//check for in bounds both row and col. don't eat through the ground. don't place overtop of existing gas blocks
+				if(colIndex<map.getTiles().length && colIndex>=0 && 
+				rowIndex<map.getTiles().length && rowIndex>=0 && 
+				!(map.getTiles()[colIndex][rowIndex].isSolid())&&
+				 !(map.getTiles()[colIndex][rowIndex]instanceof Gas) &&
+				 numSquaresToFill > 0 
+				 ){
+					g = new Gas (colIndex, rowIndex, tileSize, tileset.getImage("GasOne"), this, 0);
+					map.addTile(colIndex, rowIndex, g);
+					numSquaresToFill--;
+					placedThisRound.add(g);
+				}
+                if(colIndex == col){
+                    colIndex+=3;
+					
+                }
+            }  
+		}
+	}
+
 }
+
 
 
 
