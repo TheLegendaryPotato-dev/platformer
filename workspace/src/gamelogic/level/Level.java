@@ -45,6 +45,10 @@ public class Level {
 	private int tileSize;
 	private Tileset tileset;
 	public static float GRAVITY = 70;
+	private boolean hasTouched;
+	private int HP = 3;
+	private float immunityTimer = 0;
+	private boolean immunity = true;
 
 	public Level(LevelData leveldata) {
 		this.leveldata = leveldata;
@@ -164,6 +168,7 @@ public class Level {
 				onPlayerDeath();
 			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Spikes)
 				onPlayerDeath();
+			// for water touching to force the desired effect
 
 			for (int i = 0; i < flowers.size(); i++) {
 				if (flowers.get(i).getHitbox().isIntersecting(player.getHitbox())) {
@@ -175,12 +180,48 @@ public class Level {
 					i--;
 				}
 			}
-
+			boolean touchedWater = false;
+			// checks for player collision with water or gas
+			for(Tile [] tile: map.getTiles()){
+				for(Tile t: tile){
+					if(t instanceof Water){
+						if (t.getHitbox().isIntersecting(player.getHitbox())){
+							touchedWater = true;
+						}
+					}
+					else if (t instanceof Gas){ //##3
+						if (t.getHitbox().isIntersecting(player.getHitbox())){
+							GRAVITY =35;
+							if (!player.standingOnGround() && (Math.random() == 0.0002)){
+								onPlayerDeath();
+							}
+						}
+						else{
+							GRAVITY = 70;
+						}
+					}
+				}
+			}
+			if(touchedWater){
+				player.waterEffects();
+			}
+			else{
+				player.turnOffWaterEffect();
+			}
 			// Update the enemies
 			for (int i = 0; i < enemies.length; i++) {
 				enemies[i].update(tslf);
+				
 				if (player.getHitbox().isIntersecting(enemies[i].getHitbox())) {
-					onPlayerDeath();
+					hasTouched = true;
+				}
+					if(hasTouched == true && !immunityTimer = 0){
+        immunityTimer = System.currentTimeMillis();}
+if(!immunityTimer = 0){
+        System.currentTimeMillis() =; to find out how many milliseconds have passed since the trigger event. You can divide by 1000 here to get seconds if you want.}
+	if(some end result reached){
+ 		Reset tracking variable back to }
+					}
 				}
 			}
 
@@ -221,7 +262,7 @@ public class Level {
 		//change the tile to actually be water
 		map.addTile(col, row, w);
 
-                       //check if we can go down, and if thereś a ground tile beneath to make the fullness 3
+                       //check if we can go down, and if there's a ground tile beneath to make the fullness 3
 				 if ((row+1 < map.getTiles()[0].length && !(map.getTiles()[col][row+1]).isSolid()) && (row+2 < map.getTiles()[0].length && (map.getTiles()[col][row+2]).isSolid())){
 				water(col, row+1, map, 3); 
 				}//check if can go down, and if there's nothing beneath to change fullness to 0/falling water
@@ -256,6 +297,7 @@ public class Level {
 		}
 				}
 	}
+	// for literally adding gas as the name suggests
 	private void addGas(int col, int row, Map map, int numSquaresToFill, ArrayList<Gas> placedThisRound) { 
 		//draw a single gas block
 		Gas g = new Gas (col, row, tileSize, tileset.getImage("GasOne"), this, 0);
@@ -291,7 +333,6 @@ public class Level {
             }  
 		}
 	}
-
 }
 
 
