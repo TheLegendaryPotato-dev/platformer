@@ -21,6 +21,13 @@ public class Player extends PhysicsObject{
 	private boolean jumpKeyPressed = false;
 	private int maxJumps = 2;
 	private boolean waterEffect = false;
+	// private boolean devtool = false;
+	// private int maxDashes = 1;
+	// private boolean isDashing = false;
+	// private boolean upKeyDown = false;
+	// private int dashCounter = 0;
+	// private float dashTimer = 0;
+	// private float dashTimedFor = 0;
 	public Player(float x, float y, Level level) {
 	
 		super(x, y, level.getLevelData().getTileSize(), level.getLevelData().getTileSize(), level);
@@ -33,9 +40,12 @@ public class Player extends PhysicsObject{
 		super.update(tslf);
 		//normal movement
 		movementVector.x = 0;
-
-		if(!waterEffect){
-		//	System.out.println("here");
+		// ##2
+// precondition, waterEffect must be true- it's a trigger
+//postcondition- specified 2-3 lines below
+		if(!waterEffect){ // waterEffect affected movement means that-this part is for when watereffect isn't on
+			//you can't jump and the speed is constant/stabilised
+		//	Debug: System.out.println("here");
 			if(PlayerInput.isLeftKeyDown()){
 				if(!leftKeyDown){
 					leftKeyDown = true;
@@ -46,7 +56,7 @@ public class Player extends PhysicsObject{
 				walkSpeed = -880;
 			}
 			}
-			if(PlayerInput.isRightKeyDown()){
+			if(PlayerInput.isRightKeyDown()){ 
 				if(!rightKeyDown){
 					rightKeyDown = true;
 					keyHeldTime = System.currentTimeMillis();
@@ -62,6 +72,7 @@ public class Player extends PhysicsObject{
 				rightKeyDown= false;
 				keyHeldTime=0;
 			}
+			
 			if(!PlayerInput.isLeftKeyDown()){
 				leftKeyDown = false;
 				keyHeldTime = 0;
@@ -69,10 +80,70 @@ public class Player extends PhysicsObject{
 			if(!PlayerInput.isLeftKeyDown() && !PlayerInput.isRightKeyDown()){
 				walkSpeed = 0;
 			}
-			System.out.println( walkSpeed + " " + keyHeldTime);
+			//##4
+			// precondition: you must be in the air for effects to show
+			// postcondition: will forcefully make you go down
+			if(PlayerInput.isDownKeyDown()){
+				movementVector.y = jumpPower;
+			}
+			//##6 - scrapped
+			// precondition: player exists, endpoint exists, and upkey is pressed (or w, which is w, and win, idk)
+			// postcondition: will allow the player to fly wherever, and will turn of when the up button is pressed again
+//  if (PlayerInput.isUpKeyDown()){
+// 	devtool = true;
+//  }
+//  if (devtool == true){
+// 				if(PlayerInput.isUpKeyDown()){
+// 				devtool = false;
+// 			}
+// 			else if(PlayerInput.isLeftKeyDown()){
+// 				Player.col--;
+// 			}
+// 			else if(PlayerInput.isRightKeyDown()){
+// 				Player.col++;
+// 			}
+// 			else if(PlayerInput.isJumpKeyDown()){
+// 				Player.row++;
+// 			}
+// 			else if(PlayerInput.isJumpKeyDown()){
+// 				Player.row--;
+// 			}
+//  }
+			//##5 - scrapped because i couldn't get it to work and I'm running out of time
+			// precondition: the up, or dash button must be pressedn whole in teh air
+			// postcondition: will force the walkspeed to speed up temporarily in a short burst
+// if(PlayerInput.isUpKeyDown() && isDashing == true && standingOnGround() == false) {
+			
+// 			upKeyDown = true;
+// 			if 
+// 			if(walkSpeed>0){
+// 			walkSpeed = 1500;
+// 			dashCounter++;
+// 			dashTimer = System.currentTimeMillis();
+// 			} else if (walkSpeed<0){
+// 			walkSpeed = -1500;
+// 			dashCounter++;
+// 			dashTimer = System.currentTimeMillis();
+// 			}
+
+		
+// 		if (dashTimer> 1500){
+// 			isDashing = false;
+// 		}
+// 		if(!PlayerInput.isUpKeyDown()){
+// 			upKeyDown = false;
+// 		}
+// 	}
+			// System.out.println( walkSpeed + " " + keyHeldTime);
 
 			//##1
-			//allows for a triple jump- I'm not making it a double jump because I love the truple jump
+			//Precondition: player must already be jumping and
+		    // the jump jet must be pressed while that happens- 
+			//and must be released before each consecutive jump-
+			// and cannot happen while touching water
+			//PostConidtion:
+			//allows for a triple jump- I'm not making it a double jump 
+			//because I love the triple jump
 		if(PlayerInput.isJumpKeyDown() && !jumpKeyPressed) {
 			
 			jumpKeyPressed = true;
@@ -157,7 +228,7 @@ public void waterEffects(){
 // 		return jumpKeyPressed;
 // 	}
 }
-
+// watereffect is turned off to prevent it going endlessly
 public void turnOffWaterEffect(){
 	waterEffect = false;
 

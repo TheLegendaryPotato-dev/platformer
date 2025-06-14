@@ -34,4 +34,19 @@ class PlayerInput {
 	public static boolean isRightKeyDown() {
 		return KeyboardInputManager.isKeyDown(KeyEvent.VK_D) || KeyboardInputManager.isKeyDown(KeyEvent.VK_RIGHT);
 	}
+	/** // ##4
+	 * 
+	 * @return true if the walk-down-key is down
+	 */
+	public static boolean isDownKeyDown() {
+		return KeyboardInputManager.isKeyDown(KeyEvent.VK_S) || KeyboardInputManager.isKeyDown(KeyEvent.VK_DOWN);
+	}
+	// /** // ##5 scrapped, please ignore
+	//  * 
+	//  * @return true if the walk-up-key is down
+	//  */
+	// public static boolean isUpKeyDown() {
+	// 	return KeyboardInputManager.isKeyDown(KeyEvent.VK_W) || KeyboardInputManager.isKeyDown(KeyEvent.UP);
+	// }
+
 }

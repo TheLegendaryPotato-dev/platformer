@@ -45,10 +45,6 @@ public class Level {
 	private int tileSize;
 	private Tileset tileset;
 	public static float GRAVITY = 70;
-	private boolean hasTouched;
-	private int HP = 3;
-	private float immunityTimer = 0;
-	private boolean immunity = true;
 
 	public Level(LevelData leveldata) {
 		this.leveldata = leveldata;
@@ -157,18 +153,27 @@ public class Level {
 			// Update the player
 			player.update(tslf);
 
-			// Player death
+			// Player death + trying to remedy the glitch 
+			//that appears if the player dies (if you die 
+			//while gravtity is weird, then it sticks, even
+			//if you touch the ground without gas, and it 
+			//only goes away after touching another gas block)
 			if (map.getFullHeight() + 100 < player.getY())
 				onPlayerDeath();
+				GRAVITY=70;
 			if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Spikes)
 				onPlayerDeath();
+				GRAVITY=70;
 			if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Spikes)
 				onPlayerDeath();
+				GRAVITY=70;
 			if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Spikes)
 				onPlayerDeath();
+				GRAVITY=70;
 			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Spikes)
 				onPlayerDeath();
-			// for water touching to force the desired effect
+				GRAVITY=70;
+			
 
 			for (int i = 0; i < flowers.size(); i++) {
 				if (flowers.get(i).getHitbox().isIntersecting(player.getHitbox())) {
@@ -180,13 +185,13 @@ public class Level {
 					i--;
 				}
 			}
-			boolean touchedWater = false;
+			boolean touchedWater = false; // for water touching to force the desired effect
 			// checks for player collision with water or gas
 			for(Tile [] tile: map.getTiles()){
 				for(Tile t: tile){
-					if(t instanceof Water){
-						if (t.getHitbox().isIntersecting(player.getHitbox())){
-							touchedWater = true;
+					if(t instanceof Water){ // ##2
+						if (t.getHitbox().isIntersecting(player.getHitbox())){ // if water touches, touched water is true
+							touchedWater = true;// truggers the waterEffects
 						}
 					}
 					else if (t instanceof Gas){ //##3
@@ -194,11 +199,16 @@ public class Level {
 							GRAVITY =35;
 							if (!player.standingOnGround() && (Math.random() == 0.0002)){
 								onPlayerDeath();
+								
 							}
+							//  for debugSystem.out.println(GRAVITY);
 						}
-						else{
+						else if (!t.getHitbox().isIntersecting(player.getHitbox()) && player.standingOnGround() == true) 
+						{
 							GRAVITY = 70;
 						}
+						
+						
 					}
 				}
 			}
@@ -213,15 +223,10 @@ public class Level {
 				enemies[i].update(tslf);
 				
 				if (player.getHitbox().isIntersecting(enemies[i].getHitbox())) {
-					hasTouched = true;
+					onPlayerDeath();
 				}
-					if(hasTouched == true && !immunityTimer = 0){
-        immunityTimer = System.currentTimeMillis();}
-if(!immunityTimer = 0){
-        System.currentTimeMillis() =; to find out how many milliseconds have passed since the trigger event. You can divide by 1000 here to get seconds if you want.}
-	if(some end result reached){
- 		Reset tracking variable back to }
-					}
+					
+					
 				}
 			}
 
@@ -231,7 +236,6 @@ if(!immunityTimer = 0){
 			// Update the camera
 			camera.update(tslf);
 		}
-	}
 	
 	
 	//#############################################################################################################
@@ -271,8 +275,8 @@ if(!immunityTimer = 0){
 				}
                        //if we can’t go down go left and right.
 				else if (row+1 < map.getTiles()[0].length &&(map.getTiles()[col][row+1].isSolid())){
-						//water moves right
-		if(col+1 < map.getTiles().length && !(map.getTiles()[col+1][row] instanceof Water)) {
+						//water moves right and doesn't destroy the walls anymore!
+		if(col+1 < map.getTiles().length && !(map.getTiles()[col+1][row] instanceof Water ) && !(map.getTiles()[col-1][row].isSolid())) {
 			if (fullness == 2) {
 				water(col+1 ,  row, map,1 );
 			}
@@ -283,8 +287,8 @@ if(!immunityTimer = 0){
 				water(col+1, row, map,1 );
 			}
 		}
-		//water moves left 
-		if(col-1 >= 0 && !(map.getTiles()[col-1][row] instanceof Water)) {
+		//water moves left and doesn't destroy the walls!
+		if(col-1 >= 0 && !(map.getTiles()[col-1][row] instanceof Water) && !(map.getTiles()[col-1][row].isSolid())) {
 			if (fullness == 2) {
 				water(col-1 ,  row, map,1 );
 			}
@@ -296,8 +300,10 @@ if(!immunityTimer = 0){
 			}
 		}
 				}
+				
 	}
-	// for literally adding gas as the name suggests
+	// Precondition: gas must be called at a flower, and will fill up a certain number of blocks if possible
+	// Postcondition: literally adding gas as the name suggests, but in a specific order
 	private void addGas(int col, int row, Map map, int numSquaresToFill, ArrayList<Gas> placedThisRound) { 
 		//draw a single gas block
 		Gas g = new Gas (col, row, tileSize, tileset.getImage("GasOne"), this, 0);
@@ -305,7 +311,7 @@ if(!immunityTimer = 0){
 		numSquaresToFill--;
 		placedThisRound.add(g);
 
-		while(numSquaresToFill > 0 && placedThisRound.size()>0){
+		while(numSquaresToFill > 0 && placedThisRound.size()>0){ // gas will try to fill the corect number of gas blocks
 		col = placedThisRound.get(0).getCol();
 		row = placedThisRound.get(0).getRow();
 		placedThisRound.remove(0);
